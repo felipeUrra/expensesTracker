@@ -42,6 +42,11 @@ class Tracker:
         for info in data:
             print(f"{info[0]:<5} {info[1]:<15} {info[2]:<20} {info[3]:<10}")
 
+    def summary(self):
+        total = 0
+        for expense in self.expenses:
+            total += expense.amount
+        print("Total expenses: $" + str(total))
 
     # Utils (maybe its going to be in a specific class)
     def getExpenseIndexById(self, id):
