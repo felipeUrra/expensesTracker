@@ -12,3 +12,5 @@ tracker.listExpenses()
 
 tracker.updateExpense(1, 'refresco', 20)
 tracker.listExpenses()
+
+tracker.summary()
