@@ -3,7 +3,7 @@ import expense
 class Tracker:
     def __init__(self):
         self.expenses = []
-        self.commands = {'add', 'update', 'delete', 'list', 'summary'}
+        self.commands = {'add', 'update', 'delete', 'list', 'summary', 'help'}
     
     # Commands
     def addExpense(self, description, amount): 
@@ -11,14 +11,6 @@ class Tracker:
         self.expenses.append(newExpense)
 
         print("Expense added successfully (ID: " + str(newExpense.id) + ")")
-
-    def deleteExpense(self, id):
-        index = self.getExpenseIndexById(id)
-        if index == None:
-            print("No expense with that ID!")
-        else:
-            self.expenses.pop(index)
-            print("Expense deleted successfully!")
 
     def updateExpense(self, id, description, amount):
         index = self.getExpenseIndexById(id)
@@ -28,6 +20,14 @@ class Tracker:
             self.expenses[index].description = description
             self.expenses[index].amount = amount
             print("Expense updated successfully!")
+
+    def deleteExpense(self, id):
+        index = self.getExpenseIndexById(id)
+        if index == None:
+            print("No expense with that ID!")
+        else:
+            self.expenses.pop(index)
+            print("Expense deleted successfully!")
 
     def listExpenses(self):
         data = []
@@ -55,3 +55,49 @@ class Tracker:
                 return i
             
         return None
+
+    def getParameters(self, input):
+        return input.split(" ")
+    
+    @staticmethod
+    def errorInParameters():
+        print("Incorrect amount of parameters! If you need help use the command help.")
+    
+    def detectCommand(self, parameters):
+        command = parameters[0]
+        parameters.remove(parameters[0])
+
+        if command in self.commands:
+            if command == self.commands[0]: # add
+                if len(parameters) == 2:
+                    self.addExpense(parameters[0], parameters[1])
+                else:
+                    Tracker.errorInParameters()
+            elif command == self.commands[1]: # update
+                if len(parameters) == 3:
+                    self.updateExpense(parameters[0], parameters[1], parameters[2])
+                else:
+                    Tracker.errorInParameters()
+            elif command == self.commands[2]: # delete
+                if len(parameters) == 1:
+                    self.deleteExpense(parameters[0])
+                else:
+                    Tracker.errorInParameters()
+            elif command == self.commands[3]: # list
+                if len(parameters) == 0:
+                    self.listExpenses()
+                else:
+                    Tracker.errorInParameters()
+            elif command == self.commands[4]: # summary
+                if len(parameters) == 0:
+                    self.summary()
+                else:
+                    Tracker.errorInParameters()
+            else: # help
+                if len(parameters) == 0:
+                    # self.help()
+                    pass
+                else:
+                    Tracker.errorInParameters()
+
+
