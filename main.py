@@ -1,16 +1,12 @@
 import tracker
 
-tracker = tracker.Tracker()
-tracker.addExpense('caramelos', 20)
-tracker.addExpense('chicle', 4)
+myTracker = tracker.Tracker()
+stay = True
 
-tracker.deleteExpense(1)
+print('Expense Tracker' + '\n')
 
-tracker.addExpense('agua', 13)
+while(stay):
+    command = input('-')
 
-tracker.listExpenses()
-
-tracker.updateExpense(1, 'refresco', 20)
-tracker.listExpenses()
-
-tracker.summary()
+    stay = myTracker.detectCommand(myTracker.getParameters(command))
+    print()
