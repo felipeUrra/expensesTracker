@@ -3,7 +3,7 @@ import expense
 class Tracker:
     def __init__(self):
         self.expenses = []
-        self.commands = {'add', 'update', 'delete', 'list', 'summary', 'help'}
+        self.commands = ['add', 'update', 'delete', 'list', 'summary', 'quit' , 'help']
     
     # Commands
     def addExpense(self, description, amount): 
@@ -11,6 +11,8 @@ class Tracker:
         self.expenses.append(newExpense)
 
         print("Expense added successfully (ID: " + str(newExpense.id) + ")")
+
+        return True
 
     def updateExpense(self, id, description, amount):
         index = self.getExpenseIndexById(id)
@@ -21,6 +23,8 @@ class Tracker:
             self.expenses[index].amount = amount
             print("Expense updated successfully!")
 
+        return True
+
     def deleteExpense(self, id):
         index = self.getExpenseIndexById(id)
         if index == None:
@@ -28,6 +32,8 @@ class Tracker:
         else:
             self.expenses.pop(index)
             print("Expense deleted successfully!")
+        
+        return True
 
     def listExpenses(self):
         data = []
@@ -42,16 +48,34 @@ class Tracker:
         for info in data:
             print(f"{info[0]:<5} {info[1]:<15} {info[2]:<20} {info[3]:<10}")
 
+        return True
+
     def summary(self):
         total = 0
         for expense in self.expenses:
-            total += expense.amount
+            total += float(expense.amount)
         print("Total expenses: $" + str(total))
+
+        return True
+
+    def help(self):
+        print('Commands:')
+        print('add description(only a word) amount')
+        print('update ID description(only a word) amount')
+        print('delete ID')
+        print('list')
+        print('summary')
+        print('quit')
+        
+        return True
+
+    def quit(self):
+        return False
 
     # Utils (maybe its going to be in a specific class)
     def getExpenseIndexById(self, id):
         for i in range(0, len(self.expenses)):
-            if self.expenses[i].id == id:
+            if self.expenses[i].id == int(id):
                 return i
             
         return None
@@ -61,7 +85,8 @@ class Tracker:
     
     @staticmethod
     def errorInParameters():
-        print("Incorrect amount of parameters! If you need help use the command help.")
+        print("Incorrect amount of parameters! If you need help use the command 'help'.")
+        return True
     
     def detectCommand(self, parameters):
         command = parameters[0]
@@ -70,34 +95,41 @@ class Tracker:
         if command in self.commands:
             if command == self.commands[0]: # add
                 if len(parameters) == 2:
-                    self.addExpense(parameters[0], parameters[1])
+                    return self.addExpense(parameters[0], parameters[1])
                 else:
-                    Tracker.errorInParameters()
+                    return Tracker.errorInParameters()
             elif command == self.commands[1]: # update
                 if len(parameters) == 3:
-                    self.updateExpense(parameters[0], parameters[1], parameters[2])
+                    return self.updateExpense(parameters[0], parameters[1], parameters[2])
                 else:
-                    Tracker.errorInParameters()
+                    return Tracker.errorInParameters()
             elif command == self.commands[2]: # delete
                 if len(parameters) == 1:
-                    self.deleteExpense(parameters[0])
+                    return self.deleteExpense(parameters[0])
                 else:
-                    Tracker.errorInParameters()
+                    return Tracker.errorInParameters()
             elif command == self.commands[3]: # list
                 if len(parameters) == 0:
-                    self.listExpenses()
+                    return self.listExpenses()
                 else:
-                    Tracker.errorInParameters()
+                    return Tracker.errorInParameters()
             elif command == self.commands[4]: # summary
                 if len(parameters) == 0:
-                    self.summary()
+                    return self.summary()
                 else:
-                    Tracker.errorInParameters()
+                    return Tracker.errorInParameters()
+            elif command == self.commands[5]: # quit
+                if len(parameters) == 0:
+                    return self.quit()
+                else:
+                    return Tracker.errorInParameters()
             else: # help
                 if len(parameters) == 0:
-                    # self.help()
-                    pass
+                    return self.help()
                 else:
-                    Tracker.errorInParameters()
+                    return Tracker.errorInParameters()
+        else:
+            print("Incorrect command! If you need help use the command 'help'.")
+            return True
 
 
