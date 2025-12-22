@@ -1,4 +1,5 @@
 import expense
+import json
 
 class Tracker:
     def __init__(self):
@@ -7,7 +8,7 @@ class Tracker:
     
     # Commands
     def addExpense(self, description, amount): 
-        newExpense = expense.Expense(description, amount, expense.datetime.datetime.now())
+        newExpense = expense.Expense(expense.datetime.datetime.now(), description, amount)
         self.expenses.append(newExpense)
 
         print("Expense added successfully (ID: " + str(newExpense.id) + ")")
@@ -37,8 +38,20 @@ class Tracker:
 
     def listExpenses(self):
         data = []
+
+        i = 0
         for expense in self.expenses:
             data.append(list(expense.getInfo().split(' ')))
+            
+            aux = ''
+            for j in range(0,len(data[i][2])):
+                if data[i][2][j] == '-':
+                    aux += ' '
+                else:
+                    aux += data[i][2][j]
+            
+            data[i][2] = aux
+            i+=1
         
         header = ["ID", "Date", "Description", "Amount"]
 
@@ -70,66 +83,88 @@ class Tracker:
         return True
 
     def quit(self):
+        self.saveTrackerJson()
         return False
 
     # Utils (maybe its going to be in a specific class)
     def getExpenseIndexById(self, id):
         for i in range(0, len(self.expenses)):
-            if self.expenses[i].id == int(id):
+            if self.expenses[i].id == id:
                 return i
             
         return None
-
-    def getParameters(self, input):
-        return input.split(" ")
     
     @staticmethod
-    def errorInParameters():
-        print("Incorrect amount of parameters! If you need help use the command 'help'.")
-        return True
+    def checkChar(char, string):
+        if char in string: return False
+        return False
     
-    def detectCommand(self, parameters):
-        command = parameters[0]
-        parameters.remove(parameters[0])
+    # save/load into json
+    def saveTrackerJson(self, filename="tracker.json"):
+        data = {
+            "expenses": [e.toDict() for e in self.expenses]
+        }
+        with open(filename, "w") as f:
+            json.dump(data, f, indent=2)
+
+    def loadTrackerJson(self, filename="tracker.json"):
+        with open(filename) as f:
+            data = json.load(f)
+
+        self.expenses = [expense.Expense.fromDict(d) for d in data["expenses"]]
+    
+    def detectCommand(self, command):
 
         if command in self.commands:
             if command == self.commands[0]: # add
-                if len(parameters) == 2:
-                    return self.addExpense(parameters[0], parameters[1])
-                else:
-                    return Tracker.errorInParameters()
+                description = input("description: ")
+                if Tracker.checkChar('-', description):
+                    print("In the description you can't use '-'.")
+                    return True
+                
+                try:
+                    amount = float(input("amount: "))
+                except:
+                    print("In amount you have to write a decimal number.")
+                    return True
+                
+                return self.addExpense(description, amount)
+            
             elif command == self.commands[1]: # update
-                if len(parameters) == 3:
-                    return self.updateExpense(parameters[0], parameters[1], parameters[2])
-                else:
-                    return Tracker.errorInParameters()
+                description = input("description: ")
+                if Tracker.checkChar('-', description):
+                    print("In the description you can't use '-'.")
+                    return True
+
+                try:
+                    amount = float(input("amount: "))
+                except:
+                    print("In amount you have to write a decimal number.")
+                    return True
+                
+                return self.updateExpense(description, amount)
+
             elif command == self.commands[2]: # delete
-                if len(parameters) == 1:
-                    return self.deleteExpense(parameters[0])
-                else:
-                    return Tracker.errorInParameters()
+                try:
+                    id = int(input("id: "))
+                except:
+                    print("In id you have to write an integer.")
+                    return True
+                
+                return self.deleteExpense(id)
+            
             elif command == self.commands[3]: # list
-                if len(parameters) == 0:
-                    return self.listExpenses()
-                else:
-                    return Tracker.errorInParameters()
+                return self.listExpenses()
+            
             elif command == self.commands[4]: # summary
-                if len(parameters) == 0:
-                    return self.summary()
-                else:
-                    return Tracker.errorInParameters()
+                return self.summary()
+                
             elif command == self.commands[5]: # quit
-                if len(parameters) == 0:
-                    return self.quit()
-                else:
-                    return Tracker.errorInParameters()
+                return self.quit()
+
             else: # help
-                if len(parameters) == 0:
-                    return self.help()
-                else:
-                    return Tracker.errorInParameters()
+                return self.help()
+            
         else:
             print("Incorrect command! If you need help use the command 'help'.")
             return True
-
-

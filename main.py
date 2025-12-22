@@ -1,6 +1,10 @@
 import tracker
+from pathlib import Path
 
 myTracker = tracker.Tracker()
+
+if Path("tracker.json").exists():
+    myTracker.loadTrackerJson()
 stay = True
 
 print('Expense Tracker' + '\n')
@@ -8,5 +12,5 @@ print('Expense Tracker' + '\n')
 while(stay):
     command = input('-')
 
-    stay = myTracker.detectCommand(myTracker.getParameters(command))
+    stay = myTracker.detectCommand(command)
     print()
