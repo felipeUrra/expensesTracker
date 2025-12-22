@@ -73,9 +73,9 @@ class Tracker:
 
     def help(self):
         print('Commands:')
-        print('add description(only a word) amount')
-        print('update ID description(only a word) amount')
-        print('delete ID')
+        print('add')
+        print('update')
+        print('delete')
         print('list')
         print('summary')
         print('quit')
